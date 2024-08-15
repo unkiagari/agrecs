@@ -39,7 +39,6 @@ export default class ArcheTypes {
     this.pending.add(et)
   }
   applyPending() {
-    console.log("applyPending")
     this.pending.forEach(et => {
       this._remove(et)
       this._add(et)

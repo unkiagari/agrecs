@@ -100,11 +100,11 @@ export default class ECS {
     this.totalTime += deltaTime
     this.systems.forEach((system) => {
       if (system.disabled) return
+      this.updateArchetypeOfPendingEntities()
       system.exec(deltaTime, this.totalTime)
     })
     this.entities.forEach((et) => et.resetForSystemLoopEnd())
 
-    this.updateArchetypeOfPendingEntities()
   }
 
   run() {

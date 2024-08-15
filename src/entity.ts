@@ -50,12 +50,13 @@ export default class Entity {
   remove(component: IComponent, defered = false) {
     if (defered) {
       this.mask.add(component.removedMask)
-      this.ecs.pendingEntitiesToRemove.add(this)
-      this.removeRequestedComponentIds.add(component.id)
+      this.removeRequestedComponentIds.add
+        (component.id)
+      this.ecs.pendingEntitiesToUpdateArchetype.add(this)
     } else {
       this.mask.remove(component.mask)
       this.mask.remove(component.removedMask)
-      this.ecs.pendingEntitiesToRemove.add(this)
+      this.ecs.pendingEntitiesToUpdateArchetype.add(this)
       const _cmp = this.#componentInstances[component.id]
       this.#componentInstances[component.id] = null
       this.ecs.components[component.id].pool.push(_cmp)

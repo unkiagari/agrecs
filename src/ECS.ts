@@ -45,9 +45,12 @@ export default class ECS {
       .forEach((component) => {
         console.log("add global component", component)
         this.globalEntity.add(component)
-  })
+      })
 
     this.systems.forEach((system) => system.g = this.globalEntity)
+
+
+    this.systems.forEach((system) => system.initialize())
 
     return this
   }
@@ -100,11 +103,12 @@ export default class ECS {
       system.exec(deltaTime, this.totalTime)
     })
     this.entities.forEach((et) => et.resetForSystemLoopEnd())
+
+    this.updateArchetypeOfPendingEntities()
   }
 
   run() {
     let lastTime = 0
-    this.systems.forEach((system) => system.initialize())
     const loop = (timestamp: number) => {
       const deltaTime = timestamp - lastTime
       lastTime = timestamp

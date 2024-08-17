@@ -42,7 +42,7 @@ export default class Entity {
     this.ecs.pendingEntitiesToUpdateArchetype.add(this)
 
     this.usedComponentIds.add(component.id)
-    console.log("mask", this.mask)
+    // console.log("mask", this.mask)
 
     return componentInstance
   }
@@ -89,7 +89,7 @@ export default class Entity {
   }
 
   removeEntity(defered = false) {
-    console.log("remove entity", this.id, this.index)
+    // console.log("remove entity", this.id, this.index)
     if (defered) {
       this.ecs.pendingEntitiesToRemove.add(this)
     } else {

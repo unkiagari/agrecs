@@ -89,12 +89,16 @@ export default class Entity {
   }
 
   removeEntity(defered = false) {
+    console.log("remove entity", this.id, this.index)
     if (defered) {
       this.ecs.pendingEntitiesToRemove.add(this)
     } else {
       this.ecs.archetypes._remove(this)
       this.ecs.entities.release(this)
       this.mask.clear()
+      this.removeAll()
+      this.ecs.pendingEntitiesToRemove.add(this)
+      this.ecs.pendingEntitiesToUpdateArchetype.delete(this)
     }
   }
 

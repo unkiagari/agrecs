@@ -1,5 +1,5 @@
 import Entity from "./entity"
-import {SparseSet} from "./sparseset"
+import { SparseSet } from "./sparseset"
 
 export default class ArcheTypes {
   pending = new Set<Entity>()
@@ -9,28 +9,24 @@ export default class ArcheTypes {
 
   _remove(et: Entity) {
     const archetypes = this.map
-
     const archetype = archetypes.get(et.maskForArcheType)
     if (!archetype) return
 
     archetype.remove(et.index)
     if (archetype.packedIds.length === 0) {
-      archetypes.delete(et.mask.value)
+      archetypes.delete(et.maskForArcheType)
     }
   }
   _add(et: Entity) {
     const archetypes = this.map
     const mask = et.mask.value
-    let entityIdxes = archetypes.get(mask)
-    if (!entityIdxes) {
-      entityIdxes = new SparseSet()
-      archetypes.set(mask, entityIdxes)
+    et.maskForArcheType = mask
+    let archetype = archetypes.get(mask)
+    if (!archetype) {
+      archetype = new SparseSet()
+      archetypes.set(mask, archetype)
     }
-    entityIdxes.add(et.index)
-  }
-  update(et: Entity) {
-    this._remove(et)
-    this._add(et)
+    archetype.add(et.index)
   }
   addPending(et: Entity) {
     this.pending.add(et)

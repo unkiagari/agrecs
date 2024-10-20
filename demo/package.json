@@ -1,19 +1,18 @@
 {
-  "name": "agrecs",
+  "name": "demo",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "test": "vitest",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@types/three": "^0.169.0",
-    "three": "^0.169.0",
-    "typescript": "^5.6.2",
-    "vite": "^5.4.8",
-    "vitest": "^2.1.2"
+    "typescript": "^5.6.3",
+    "vite": "^5.4.8"
+  },
+  "dependencies": {
+    "three": "^0.169.0"
   }
 }

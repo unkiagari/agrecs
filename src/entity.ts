@@ -38,24 +38,22 @@ export default class Entity {
     const componentInstance = component.pool.pop() ?? component.make(this.ecs)
     this.#componentInstances[component.id] = componentInstance
     this.mask.add(component.mask)
-    this.mask.add(component.addedMask)
-    this.ecs.pendingEntitiesToUpdateArchetype.add(this)
+    this.ecs.archetypes.pending.add(this)
 
     this.usedComponentIds.add(component.id)
-    console.log("mask", this.mask)
+    // console.log("mask", this.mask)
 
     return componentInstance
   }
 
   remove(component: IComponent, defered = false) {
     if (defered) {
-      this.mask.add(component.removedMask)
       this.ecs.pendingEntitiesToRemove.add(this)
       this.removeRequestedComponentIds.add(component.id)
     } else {
       this.mask.remove(component.mask)
-      this.mask.remove(component.removedMask)
-      this.ecs.pendingEntitiesToRemove.add(this)
+      this.ecs.archetypes.pending.add(this)
+      this.ecs.pendingEntitiesToRemove.delete(this)
       const _cmp = this.#componentInstances[component.id]
       this.#componentInstances[component.id] = null
       this.ecs.components[component.id].pool.push(_cmp)
@@ -67,10 +65,11 @@ export default class Entity {
     return this
   }
   removeAll(defered = false) {
-    this.usedComponentIds.packedIds.forEach(id => {
+    for (let i = this.usedComponentIds.packedIds.length - 1; i >= 0; i--) {
+      const id = this.usedComponentIds.packedIds[i]
       const componentSchema = this.ecs.components[id]
       this.remove(componentSchema, defered)
-    })
+    }
   }
 
   has(component: IComponent) {
@@ -83,7 +82,6 @@ export default class Entity {
     return this.#componentInstances[component.id] as T
   }
   write<T>(component: IComponent<T>) {
-    this.mask.add(component.changedMask)
     return this.#componentInstances[component.id] as T
   }
 
@@ -91,6 +89,8 @@ export default class Entity {
     if (defered) {
       this.ecs.pendingEntitiesToRemove.add(this)
     } else {
+      this.removeAll()
+      this.ecs.archetypes.pending.delete(this)
       this.ecs.archetypes._remove(this)
       this.ecs.entities.release(this)
       this.mask.clear()

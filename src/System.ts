@@ -1,13 +1,13 @@
 import ECS from "./ECS";
 import Entity from "./entity";
-import { IQuery } from "./query";
+import { Query } from "./QueryV2.ts";
 
 export abstract class System {
   ecs: ECS
   g: Entity
   disabled = false;
-  query(q: IQuery) {
-    return this.ecs.query(q)
+  query(q: Query) {
+    return this.ecs.queryV2(q)
   }
   constructor(ecs: ECS) {
     this.ecs = ecs

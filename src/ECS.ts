@@ -5,13 +5,13 @@ import Entity from "./entity";
 import Query from "./query";
 import { IQuery } from "./query";
 import { System } from "./System";
+import { QueryV2, Query as _Query } from "./QueryV2.ts";
 
 export default class ECS {
   archetypes = new ArcheTypes()
   entities = new ObjectPool((index: number) => new Entity(this, index))
   globalEntity = null as any as Entity
 
-  pendingEntitiesToUpdateArchetype = new Set<Entity>()
   pendingEntitiesToRemove = new Set<Entity>()
 
   components = [] as IComponent[]
@@ -31,11 +31,7 @@ export default class ECS {
   }
   setup() {
     this.components.forEach((component) => {
-      const len = this.components.length
       component.mask = 1n << BigInt(component.id)
-      component.changedMask = component.mask << BigInt(len)
-      component.addedMask = component.mask << BigInt(len * 2)
-      component.removedMask = component.mask << BigInt(len * 3)
     })
 
     this.globalEntity = this.createEntity()
@@ -43,9 +39,9 @@ export default class ECS {
     this.components
       .filter(v => v.options.global)
       .forEach((component) => {
-        console.log("add global component", component)
+        // console.log("add global component", component)
         this.globalEntity.add(component)
-  })
+      })
 
     this.systems.forEach((system) => system.g = this.globalEntity)
 
@@ -59,6 +55,7 @@ export default class ECS {
     et.maskForArcheType = 0n
     et.mask.value = 0n
     this.archetypes._add(et)
+
     return et
   }
   getEntity(id: bigint) {
@@ -84,19 +81,15 @@ export default class ECS {
   query(q: IQuery) {
     return new Query(this, q)
   }
-
-  updateArchetypeOfPendingEntities() {
-    this.pendingEntitiesToUpdateArchetype.forEach(et => {
-      this.archetypes.update(et)
-    })
-    this.archetypes.applyPending()
-    this.pendingEntitiesToUpdateArchetype.clear()
+  queryV2(q: _Query) {
+    return new QueryV2(this, q)
   }
 
   tick(deltaTime: number) {
     this.totalTime += deltaTime
     this.systems.forEach((system) => {
       if (system.disabled) return
+      this.archetypes.applyPending()
       system.exec(deltaTime, this.totalTime)
     })
     this.entities.forEach((et) => et.resetForSystemLoopEnd())

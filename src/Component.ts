@@ -7,9 +7,6 @@ interface IComponentOptions<T> {
 export interface IComponent<T = any> {
   id: number
   mask: bigint
-  changedMask: bigint
-  addedMask: bigint
-  removedMask: bigint
   options: IComponentOptions<T>,
 
   make: (ecs: ECS) => T
@@ -38,4 +35,5 @@ function raw<T>(make: (ecs: ECS) => T, options: Partial<IComponentOptions<T>> = 
 
 export default {
   raw,
+  tag: () => raw(() => ({})),
 }

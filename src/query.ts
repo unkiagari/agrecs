@@ -21,6 +21,7 @@ export default class Query {
 
   match() {
     const r = [] as Entity[]
+    // console.log(this.ecs.archetypes)
     this.ecs.archetypes.map.forEach((v, k) => {
       if (this._match(k)) {
         v.packedIds.forEach(etIdx => {
